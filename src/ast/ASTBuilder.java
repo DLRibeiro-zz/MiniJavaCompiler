@@ -31,9 +31,9 @@ public class ASTBuilder {
 		List<TerminalNode> tokens = cdc.IDENTIFIER();
 		ClassDecl cds;
 		if(tokens.size() < 2){
-			cds = new ClassDeclSimple(new Identifier(tokens.get(0).toString()),this.visitVarDeclList(cdc.varDeclaration()), this.visitMethodDeclList(cdc.methodDeclaration()));
+			cds = new ClassDeclSimple(new Identifier(tokens.get(0).getText()),this.visitVarDeclList(cdc.varDeclaration()), this.visitMethodDeclList(cdc.methodDeclaration()));
 		}else{
-		    cds = new ClassDeclExtends(new Identifier(tokens.get(0).toString()),new Identifier(tokens.get(3).toString()),this.visitVarDeclList(cdc.varDeclaration()), this.visitMethodDeclList(cdc.methodDeclaration()));
+		    cds = new ClassDeclExtends(new Identifier(tokens.get(0).getText()),new Identifier(tokens.get(3).getText()),this.visitVarDeclList(cdc.varDeclaration()), this.visitMethodDeclList(cdc.methodDeclaration()));
 		}
 		return cds;
 	}
@@ -52,9 +52,9 @@ public class ASTBuilder {
 		MethodDecl newMd = null;
 		FormalList args = new FormalList();
 		Type tipoMetodo = this.visitType(tipos.get(0));
-		Identifier nomeMetodo = new Identifier(tokens.get(0).toString());
+		Identifier nomeMetodo = new Identifier(tokens.get(0).getText());
 		for(int i = 1; i< tipos.size();i++){
-			args.addElement(new Formal(this.visitType(tipos.get(i)),new Identifier(tokens.get(i).toString())));
+			args.addElement(new Formal(this.visitType(tipos.get(i)),new Identifier(tokens.get(i).getText())));
 		}
 		VarDeclList variaveis = this.visitVarDeclList(md.varDeclaration());
 		StatementList statements = this.visitStatementList(md.statement());
@@ -73,7 +73,7 @@ public class ASTBuilder {
 		if(operandos != null){
 			Exp exp1 = this.visitExp(expr.get(0));
 			Exp exp2 = this.visitExp(expr.get(1));
-			switch(operandos.toString()){
+			switch(operandos.getText()){
 			case "&&": return new And(exp1,exp2);
 			case "<" : return new LessThan(exp1,exp2);
 			case "+" : return new Plus(exp1,exp2);
@@ -83,13 +83,13 @@ public class ASTBuilder {
 		}else if(expr.size()==2){
 			return new ArrayLookup(this.visitExp(expr.get(0)),this.visitExp(expr.get(1)));
 		}else if(expr.size() >= 1 && ids != null){
-			return new Call(this.visitExp(expr.get(0)),new Identifier(ids.toString()), this.visitExpList(expr.get(1)));
+			return new Call(this.visitExp(expr.get(0)),new Identifier(ids.getText()), this.visitExpList(expr.get(1)));
 		}else if(expr.size() == 1 && !text.contains("new")){
 			return new ArrayLength(this.visitExp(expr.get(0)));
 		}else if(numero != null){
-			return new IntegerLiteral(Integer.parseInt(numero.toString()));
+			return new IntegerLiteral(Integer.parseInt(numero.getText()));
 		}else if(ids != null && !text.contains("new")){
-			return new IdentifierExp(ids.toString());
+			return new IdentifierExp(ids.getText());
 		}else if(text.contains("true")){
 			return new True();
 		}else if(text.contains("false")){
@@ -100,7 +100,7 @@ public class ASTBuilder {
 			if(expr.size() == 1){
 				return new NewArray(this.visitExp(expr.get(0)));
 			}else{
-				return new NewObject(new Identifier(ids.toString()));
+				return new NewObject(new Identifier(ids.getText()));
 			}
 		}else if(text.contains("!")){
 			return new Not(this.visitExp(expr.get(0)));
@@ -136,9 +136,9 @@ public class ASTBuilder {
 		}else if(text.contains("while")){
 			returnStmt = new While(this.visitExp(expr.get(0)),this.visitStatement(sts.get(0)));
 		}else if(tokens != null && expr.size() == 2){
-			returnStmt = new ArrayAssign(new Identifier(tokens.toString()), this.visitExp(expr.get(0)),this.visitExp(expr.get(1)));
+			returnStmt = new ArrayAssign(new Identifier(tokens.getText()), this.visitExp(expr.get(0)),this.visitExp(expr.get(1)));
 		}else if(tokens != null && expr.size()==1){
-			returnStmt = new Assign(new Identifier(tokens.toString()), this.visitExp(expr.get(0)));
+			returnStmt = new Assign(new Identifier(tokens.getText()), this.visitExp(expr.get(0)));
 		}else if(expr.size() == 1){
 			returnStmt = new Print(this.visitExp(expr.get(0)));
 		}else {
@@ -153,7 +153,7 @@ public class ASTBuilder {
 		Type retornoType = null;
 		TerminalNode id = typeContext.IDENTIFIER();
 		if(id != null){
-			retornoType = new IdentifierType(id.toString());
+			retornoType = new IdentifierType(id.getText());
 		}
 		String retorno = typeContext.getText();
 		if(retorno.equals("boolean")){
@@ -177,7 +177,7 @@ public class ASTBuilder {
 	private VarDecl visitVarDecl(VarDeclarationContext vdc) {
 		VarDecl retorno = null;
 		Type tipo = this.visitType(vdc.type());
-		Identifier id = new Identifier(vdc.IDENTIFIER().toString());
+		Identifier id = new Identifier(vdc.IDENTIFIER().getText());
 		retorno = new VarDecl(tipo, id);
 		return retorno;
 	}
@@ -185,6 +185,6 @@ public class ASTBuilder {
 	private MainClass visitMain(MainClassContext mainClass) {
 		List<TerminalNode> id = mainClass.IDENTIFIER();
 		StatementContext stmt = mainClass.statement();
-		return new MainClass(new Identifier(id.get(0).toString()), new Identifier(id.get(1).toString()), this.visitStatement(stmt));
+		return new MainClass(new Identifier(id.get(0).getText()), new Identifier(id.get(1).getText()), this.visitStatement(stmt));
 	}
 }
