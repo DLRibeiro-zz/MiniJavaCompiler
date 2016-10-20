@@ -130,10 +130,9 @@ public class ASTBuilder {
 		List<StatementContext> sts = statementContext.statement();
 		TerminalNode tokens = statementContext.IDENTIFIER();
 		List<ExpressionContext> expr = statementContext.expression();
-		String text = statementContext.getText();
-		if(text.contains("if")){
+		if(sts.size() == 2 && expr.size()==1 ){
 			returnStmt = new If(this.visitExp(expr.get(0)),this.visitStatement(sts.get(0)),this.visitStatement(sts.get(1)));
-		}else if(text.contains("while")){
+		}else if(expr.size() == 1 && sts.size()==1){
 			returnStmt = new While(this.visitExp(expr.get(0)),this.visitStatement(sts.get(0)));
 		}else if(tokens != null && expr.size() == 2){
 			returnStmt = new ArrayAssign(new Identifier(tokens.getText()), this.visitExp(expr.get(0)),this.visitExp(expr.get(1)));
@@ -158,7 +157,7 @@ public class ASTBuilder {
 		String retorno = typeContext.getText();
 		if(retorno.equals("boolean")){
 			retornoType = new BooleanType();
-		}else if(retorno.equals("int []")){
+		}else if(retorno.contains("int") && retorno.contains("[") && retorno.contains("]")){
 			retornoType = new IntArrayType();
 		}else if(retorno.equals("int")){
 			retornoType = new IntegerType();

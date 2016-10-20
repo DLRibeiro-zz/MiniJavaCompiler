@@ -5,7 +5,7 @@ mainClass : 'class' IDENTIFIER '{' 'public' 'static' 'void' 'main' '(' 'String' 
 classDeclaration :'class' IDENTIFIER ( 'extends' IDENTIFIER )? '{' ( varDeclaration )* ( methodDeclaration )* '}';
 varDeclaration : type IDENTIFIER ';' ;
 methodDeclaration :'public' type IDENTIFIER '(' ( type IDENTIFIER ( ',' type IDENTIFIER )* )? ')' '{' ( varDeclaration )* ( statement )* 'return' expression ';' '}';
-type: 'int []' | 'boolean' | 'int' |IDENTIFIER;
+type: 'int' '[' ']' | 'boolean' | 'int' |IDENTIFIER;
 statement : '{' ( statement )* '}'
 |
 'if' '(' expression ')' statement 'else' statement
