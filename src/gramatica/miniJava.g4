@@ -43,6 +43,6 @@ IDENTIFIER
 |
 '(' expression ')';
 OPERAND : ( '&&' | '<' | '+' | '-' | '*' );
-IDENTIFIER : [a-zA-Z]([a-zAz]|[0-9]|['_'])*;
+IDENTIFIER : [a-zA-Z]([a-zA-Z]|[0-9]|['_'])*;
 INTEGER_LITERAL : [0-9]+;
 WS : [' \r\n\t']+ -> skip;

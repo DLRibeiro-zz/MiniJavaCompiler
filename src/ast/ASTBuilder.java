@@ -1,5 +1,6 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -64,12 +65,13 @@ public class ASTBuilder {
 	}
 
 	private Exp visitExp(ExpressionContext expression) {
-		Exp exp = null;
+	
 		TerminalNode operandos = expression.OPERAND();
 		TerminalNode ids = expression.IDENTIFIER();
 		TerminalNode numero = expression.INTEGER_LITERAL();
 		List<ExpressionContext> expr = expression.expression();
 		String text = expression.getText();
+		
 		if(operandos != null){
 			Exp exp1 = this.visitExp(expr.get(0));
 			Exp exp2 = this.visitExp(expr.get(1));
@@ -80,12 +82,16 @@ public class ASTBuilder {
 			case "-" : return new Minus(exp1,exp2);
 			case "*" : return new Times(exp1,exp2);
 			}
-		}else if(expr.size()==2){
+		}else if(expr.size()==2 && text.contains("[") && text.contains("]")){
 			return new ArrayLookup(this.visitExp(expr.get(0)),this.visitExp(expr.get(1)));
-		}else if(expr.size() >= 1 && ids != null){
-			return new Call(this.visitExp(expr.get(0)),new Identifier(ids.getText()), this.visitExpList(expr.get(1)));
-		}else if(expr.size() == 1 && !text.contains("new")){
+		}else if(expr.size() == 1 && !text.contains("new") && text.contains("length")){
 			return new ArrayLength(this.visitExp(expr.get(0)));
+		}else if(expr.size() >= 1 && ids != null){
+			List<ExpressionContext> expr2 = new ArrayList<ExpressionContext>();
+			for(int i =1; i< expr.size();i++){
+				expr2.add(expr.get(i));
+			}
+			return new Call(this.visitExp(expr.get(0)),new Identifier(ids.getText()), this.visitExpList(expr2));
 		}else if(numero != null){
 			return new IntegerLiteral(Integer.parseInt(numero.getText()));
 		}else if(ids != null && !text.contains("new")){
@@ -94,7 +100,7 @@ public class ASTBuilder {
 			return new True();
 		}else if(text.contains("false")){
 			return new False();
-		}else if(text.contains("this")){
+		}else if(text.equals("this")){
 			return new This();
 		}else if(text.contains("new")){
 			if(expr.size() == 1){
@@ -108,9 +114,9 @@ public class ASTBuilder {
 		return this.visitExp(expr.get(0));	
 	}
 
-	private ExpList visitExpList(ExpressionContext expressionContext) {
-		List<ExpressionContext> exprs = expressionContext.expression();
+	private ExpList visitExpList(List<ExpressionContext> expressionContext) {
 		ExpList expL = new ExpList();
+		List<ExpressionContext> exprs = expressionContext;
 		for(int i = 0; i<exprs.size();i++){
 			expL.addElement(this.visitExp(exprs.get(i)));
 		}
