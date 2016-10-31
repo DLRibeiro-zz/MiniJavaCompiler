@@ -37,6 +37,7 @@ import ast.StatementList;
 import ast.This;
 import ast.Times;
 import ast.True;
+import ast.Type;
 import ast.VarDecl;
 import ast.While;
 
@@ -67,6 +68,14 @@ public class BuildSymbolTableVisitor implements Visitor {
 	// Identifier i1,i2;
 	// Statement s;
 	public void visit(MainClass n) {
+		String t = null;
+		symbolTable.addClass(n.i1.toString(), t);
+		Class mainClass = symbolTable.getClass(n.i1.toString());
+		currClass = mainClass;
+		Type t1 = null;
+		mainClass.addMethod("main", t1);
+		currMethod = currClass.getMethod("main");
+		currMethod.addParam(n.i2.toString(), t1);
 		n.i1.accept(this);
 		n.i2.accept(this);
 		n.s.accept(this);
@@ -76,12 +85,20 @@ public class BuildSymbolTableVisitor implements Visitor {
 	// VarDeclList vl;
 	// MethodDeclList ml;
 	public void visit(ClassDeclSimple n) {
+		String nul = null;
+		symbolTable.addClass(n.i.toString(), nul);
+		Class newClass = symbolTable.getClass(n.i.toString());
+		currClass = newClass;
 		n.i.accept(this);
 		for (int i = 0; i < n.vl.size(); i++) {
+			currClass.addVar(n.vl.elementAt(i).i.toString(), n.vl.elementAt(i).t);
 			n.vl.elementAt(i).accept(this);
 		}
 		for (int i = 0; i < n.ml.size(); i++) {
+			currClass.addMethod(n.ml.elementAt(i).i.toString(), n.ml.elementAt(i).t);
+			currMethod = currClass.getMethod(n.ml.elementAt(i).i.toString());
 			n.ml.elementAt(i).accept(this);
+			currMethod = null;
 		}
 	}
 
@@ -90,13 +107,20 @@ public class BuildSymbolTableVisitor implements Visitor {
 	// VarDeclList vl;
 	// MethodDeclList ml;
 	public void visit(ClassDeclExtends n) {
+		String nul = null;
+		symbolTable.addClass(n.i.toString(), n.j.toString());
+		Class newClass = symbolTable.getClass(n.i.toString());
 		n.i.accept(this);
 		n.j.accept(this);
 		for (int i = 0; i < n.vl.size(); i++) {
+			currClass.addVar(n.vl.elementAt(i).i.toString(), n.vl.elementAt(i).t);
 			n.vl.elementAt(i).accept(this);
 		}
 		for (int i = 0; i < n.ml.size(); i++) {
+			currClass.addMethod(n.ml.elementAt(i).i.toString(), n.ml.elementAt(i).t);
+			currMethod = currClass.getMethod(n.ml.elementAt(i).i.toString());
 			n.ml.elementAt(i).accept(this);
+			currMethod = null;
 		}
 	}
 
@@ -117,9 +141,11 @@ public class BuildSymbolTableVisitor implements Visitor {
 		n.t.accept(this);
 		n.i.accept(this);
 		for (int i = 0; i < n.fl.size(); i++) {
+			currMethod.addParam(n.fl.elementAt(i).i.toString(),n.fl.elementAt(i).t);
 			n.fl.elementAt(i).accept(this);
 		}
 		for (int i = 0; i < n.vl.size(); i++) {
+			currMethod.addVar(n.vl.elementAt(i).i.toString(),n.vl.elementAt(i).t);
 			n.vl.elementAt(i).accept(this);
 		}
 		for (int i = 0; i < n.sl.size(); i++) {
@@ -250,6 +276,7 @@ public class BuildSymbolTableVisitor implements Visitor {
 	}
 
 	public void visit(False n) {
+		
 	}
 
 	// String s;

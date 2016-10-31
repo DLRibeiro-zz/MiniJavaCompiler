@@ -84,7 +84,7 @@ public class ASTBuilder {
 			}
 		}else if(expr.size()==2 && text.contains("[") && text.contains("]")){
 			return new ArrayLookup(this.visitExp(expr.get(0)),this.visitExp(expr.get(1)));
-		}else if(expr.size() == 1 && !text.contains("new") && text.contains("length")){
+		}else if(expr.size() == 1 && !text.startsWith("new") && text.contains("length")){
 			return new ArrayLength(this.visitExp(expr.get(0)));
 		}else if(expr.size() >= 1 && ids != null){
 			List<ExpressionContext> expr2 = new ArrayList<ExpressionContext>();
@@ -94,21 +94,21 @@ public class ASTBuilder {
 			return new Call(this.visitExp(expr.get(0)),new Identifier(ids.getText()), this.visitExpList(expr2));
 		}else if(numero != null){
 			return new IntegerLiteral(Integer.parseInt(numero.getText()));
-		}else if(ids != null && !text.contains("new")){
+		}else if(ids != null && !text.startsWith("new")){
 			return new IdentifierExp(ids.getText());
-		}else if(text.contains("true")){
+		}else if(text.startsWith("true")){
 			return new True();
-		}else if(text.contains("false")){
+		}else if(text.startsWith("false")){
 			return new False();
 		}else if(text.equals("this")){
 			return new This();
-		}else if(text.contains("new")){
+		}else if(text.startsWith("new")){
 			if(expr.size() == 1){
 				return new NewArray(this.visitExp(expr.get(0)));
 			}else{
 				return new NewObject(new Identifier(ids.getText()));
 			}
-		}else if(text.contains("!")){
+		}else if(text.startsWith("!")){
 			return new Not(this.visitExp(expr.get(0)));
 		}
 		return this.visitExp(expr.get(0));	
@@ -163,7 +163,7 @@ public class ASTBuilder {
 		String retorno = typeContext.getText();
 		if(retorno.equals("boolean")){
 			retornoType = new BooleanType();
-		}else if(retorno.contains("int") && retorno.contains("[") && retorno.contains("]")){
+		}else if(retorno.startsWith("int") && retorno.contains("[") && retorno.contains("]")){
 			retornoType = new IntArrayType();
 		}else if(retorno.equals("int")){
 			retornoType = new IntegerType();

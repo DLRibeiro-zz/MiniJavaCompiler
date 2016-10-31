@@ -8,6 +8,9 @@ public class IdentifierType extends Type {
   public IdentifierType(String as) {
     s=as;
   }
+  public String toString(){
+	  return s;
+  }
 
   public void accept(Visitor v) {
     v.visit(this);

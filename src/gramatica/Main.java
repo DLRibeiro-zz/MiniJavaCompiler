@@ -24,8 +24,13 @@ public class Main {
             ASTBuilder builder = new ASTBuilder();
             
             
-            Program prog = builder.visitGoal(parser.goal());;
+            Program prog = builder.visitGoal(parser.goal());
+            BuildSymbolTableVisitor symb = new BuildSymbolTableVisitor();
+            prog.accept(symb);
+            
             PrettyPrintVisitor ptv = new PrettyPrintVisitor();
             prog.accept(ptv);
+            TypeCheckVisitor type = new TypeCheckVisitor(symb.getSymbolTable());
+            prog.accept(type);
 		}
 }
